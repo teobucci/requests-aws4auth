@@ -266,10 +266,8 @@ class AWS4Auth(AuthBase):
 
         self.signing_key = None
 
-        if refreshable_credentials:
+        if refreshable_credentials and region and service:
             # Case 1: Using RefreshableCredentials
-            if not region or not service:
-                raise ValueError("For 'refreshable_credentials' instantiation, 'region' and 'service' must be provided.")
             self.refreshable_credentials = refreshable_credentials
             self.service = service
             self.region = region
@@ -298,8 +296,8 @@ class AWS4Auth(AuthBase):
                 self.date = date
                 self.regenerate_signing_key(secret_key=secret_key)
             else:
-                msg = "Invalid parameters. Must instantiate with one of the three allowed methods."
-                raise ValueError(msg)
+                msg = "Invalid parameters. Must instantiate with one of the three allowed methods: (1) refreshable_credentials, service and region; (2) access_id and signing_key; (3) access_id, secret_key, region, and service."
+                raise TypeError(msg)
         
         assert isinstance(raise_invalid_date, bool), "raise_invalid_date must be a boolean"
         self.raise_invalid_date = raise_invalid_date
